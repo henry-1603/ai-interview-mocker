@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { db } from "@/utils/db";
+import { MockInterview } from "@/utils/schema";
+import { v4 as uuidv4 } from 'uuid';
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -18,29 +23,63 @@ function AddNewInterview() {
   const [jobDescription, setJobDescription] = useState("");
   const [jobExperience, setJobExperience] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [jsonResponse , setJsonResponse] = useState();
+  const router = useRouter();
+  const {user} = useUser();
+  console.log(user);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // ✅ Start loading
+    setIsLoading(true);
+  
     console.log(jobPosition, jobDescription, jobExperience);
-
-    const InputPrompt = `Job Position: ${jobPosition}, Job Description: ${jobDescription}, Years of Experience: ${jobExperience}. Based on this information, please generate 5 interview questions with answers in JSON format.`;
-
+  
+    const InputPrompt = `Job Position: ${jobPosition}, Job Description: ${jobDescription}, Years of Experience: ${jobExperience}. Based on this information, please generate 5 interview questions with answers in valid JSON format without additional text.`;
+  
     try {
       const response = await fetch("/api/gemini-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: InputPrompt }),
       });
-
+  
       const data = await response.json();
-      console.log("AI Response:", data.response);
+      
+      // Extract JSON content using regex
+      const jsonMatch = data.response.match(/```json([\s\S]*?)```/);
+      const cleanedResponse = jsonMatch ? jsonMatch[1].trim() : data.response.trim();
+      
+      const parsedData = JSON.parse(cleanedResponse);
+      setJsonResponse(parsedData);
+  
+      if (parsedData) {
+        const resp = await db.insert(MockInterview)
+          .values({
+            mockId: uuidv4(),
+            jsonMockResp: JSON.stringify(parsedData), // Ensure it's stored as string
+            jobPosition: jobPosition,
+            jobDesc: jobDescription,
+            jobExperience: jobExperience,
+            createdBy: user?.primaryEmailAddress?.emailAddress,
+            createdAt: new Date(),
+          })
+          .returning({ mockId: MockInterview.mockId });
+  
+        console.log("Data Inserted", resp , jsonResponse);
+        if(resp) {
+          setOpenDialog(false);
+          router.push('/dashboard/interview/' + resp[0]?.mockId);
+        }
+      } else {
+        console.error("Error inserting data");
+      }
     } catch (error) {
       console.error("Error calling Gemini API:", error);
     } finally {
-      setIsLoading(false); // ✅ Stop loading when API call is done
+      setIsLoading(false);
     }
   };
+  
 
   return (
     <div>
