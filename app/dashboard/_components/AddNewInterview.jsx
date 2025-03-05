@@ -98,10 +98,10 @@ function AddNewInterview() {
             <DialogDescription>
               <form onSubmit={onSubmit}>
                 <div>
-                  <h2>
+                  <span className="text-lg">
                     Add details about your job position/role , Job description
                     and years of experience
-                  </h2>
+                  </span>
 
                   <div className="mt-7 my-3">
                     <label>Job Role/Job Position</label>
