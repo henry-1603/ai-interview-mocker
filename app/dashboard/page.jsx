@@ -1,5 +1,6 @@
 import React from 'react'
 import AddNewInterviee from './_components/AddNewInterview'
+import InterviewList from './_components/InterviewList'
 
 function Dashboard() {
   return (
@@ -11,6 +12,9 @@ function Dashboard() {
       <div className='grid grid-cols-1 md:grid-cols-3 my-5'>
         <AddNewInterviee/>
       </div>
+
+      {/* <h2>Previous Interview List : </h2> */}
+      <InterviewList/>
       </div>
   )
 }

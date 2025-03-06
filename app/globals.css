@@ -120,3 +120,14 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+
+/* customCss */
+
+.coverImage {
+  filter: opacity(90px) !important;
+}
+
+.textColor {
+  color:black !important
+}

@@ -2,11 +2,18 @@
 import { UserButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 function Header() {
 
     const path = usePathname();
+    const router = useRouter();
+
+const handleRoute  = () => {
+    router.push('/dashboard')
+}
+
   return (
     <div className="flex p-4 items-center justify-between bg-secondary shadow-sm">
         <div className='flex gap-2 justify-center items-center'>
@@ -14,7 +21,7 @@ function Header() {
         <p className='text-[#2f436e] font-black text-xl'>AI INTERVIEW</p>
         </div>
         <ul className='hidden md:flex gap-6'>
-            <li className={` hover:text-[#2f436e] hover:font-bold transition-all cursor-pointer
+            <li onClick={()=>{handleRoute()}} className={` hover:text-[#2f436e] hover:font-bold transition-all cursor-pointer
                 ${path == '/dashboard' && 'text-[#2f436e] font-bold'}`}>Dashboard</li>
             <li className={`hover:text-[#2f436e] hover:font-bold transition-all cursor-pointer
                 ${path == '/dashboard/questions' && 'text-[#2f436e] font-bold'}`} >Questions</li>

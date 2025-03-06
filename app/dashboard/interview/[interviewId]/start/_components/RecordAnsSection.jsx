@@ -17,6 +17,7 @@ function RecordAnsSection({
   const [camEnabled, setCamEnabled] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
   const [loading, setIsLoading] = useState(false);
+
   const { user } = useUser();
   const {
     error,
@@ -25,10 +26,12 @@ function RecordAnsSection({
     results,
     startSpeechToText,
     stopSpeechToText,
+    setResults,
   } = useSpeechToText({
     continuous: true,
     useLegacyResults: false,
   });
+
 
   useEffect(() => {
     setCamEnabled(localStorage.getItem("webCamEnabled") === "true"); // Convert string to boolean
@@ -54,6 +57,9 @@ function RecordAnsSection({
       setIsLoading(true);
       console.log("Final Answer:", userAnswer);
       console.log("Answer Length:", userAnswer.length);
+      console.log(mockInterviewQuestion[activeQuestionIndex]?.answer["summary"]);
+      console.log(mockInterviewQuestion[activeQuestionIndex]?.answer?.summary);
+
 
       if (userAnswer.length < 5) {
         setIsLoading(false);
@@ -95,12 +101,15 @@ function RecordAnsSection({
             createdAt: new Date(),
           });
 
-          console.log("re " , resp)
+          console.log("re ", resp);
 
           if (resp) {
             setIsLoading(false);
+            setUserAnswer("");
+            setResults([]);
             toast("User Answer Recorded successfully!");
           }
+          setResults([]);
         })
 
         .catch((err) => {
@@ -167,8 +176,7 @@ function RecordAnsSection({
         )}
       </Button>
 
-      <Button className="w-full mt-5 bg-[#2f436e]">Show User Answer</Button>
-      {userAnswer}
+     {userAnswer && <div className="p-2 mt-5 rounded-lg bg-gray-200 text-gray-900"><strong>Recorded Answer :</strong> {userAnswer}</div>}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Lightbulb, Volume2 } from "lucide-react";
 import React from "react";
 
-function QuestionSection({ mockInterviewQuestion, activeQuestionIndex }) {
+function QuestionSection({ mockInterviewQuestion, activeQuestionIndex , setActiveQuestionIndex}) {
   // Show a loader if mockInterviewQuestion is empty or null
   if (!mockInterviewQuestion || mockInterviewQuestion.length === 0) {
     return (
@@ -28,6 +28,7 @@ function QuestionSection({ mockInterviewQuestion, activeQuestionIndex }) {
         {mockInterviewQuestion.map((question, index) => (
           <h2
             key={index}
+            onClick={()=> {{setActiveQuestionIndex(index)}}}
             className={`p-2 rounded-full bg-gray-300 text-xs md:text-sm text-center cursor-pointer ${
               activeQuestionIndex === index
                 ? "!bg-[#2f436e] text-white font-bold"
